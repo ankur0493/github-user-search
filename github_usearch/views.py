@@ -1,42 +1,31 @@
 from __future__ import unicode_literals
 
-import json
+import datetime
 
-from rest_framework import views, response
+from django.views.generic.base import TemplateView
 
-from .constants import GITHUB_USER_SEARCH_URL
-from .interface import invoke_github_api
 from .models import GithubUserData
-from .serializers import GitHubUserSearchSerializer
 
-class GithubUserSearchView(views.APIView):
+class AdminPanelHomeView(TemplateView):
 
-    def get_search_term(self, request):
-        query_params = request.query_params
-        q = query_params.get("q", "")
-        for param in query_params:
-            if param != "q":
-                q += "+" if q else ""
-                q += param + ":" + query_params[param]
-        return "?q=" + q
+    template_name = "admin_panel.html"
 
-    def _create(self, data):
-        bulk_create_objs = []
-        for obj_data in data:
-            try:
-                obj = GithubUserData.objects.get(github_id=obj_data['github_id'])
-                for (key, value) in obj_data.items():
-                    setattr(obj, key, value)
-                obj.save()
-            except GithubUserData.DoesNotExist:
-                bulk_create_objs.append(GithubUserData(**obj_data))
-        if bulk_create_objs:
-            GithubUserData.objects.bulk_create(bulk_create_objs)
+    def get_context_data(self, **kwargs):
+        context = super(AdminPanelHomeView, self).get_context_data(**kwargs)
+        context['users'] = GithubUserData.objects.all().order_by('-created')[:10]
+        return context
 
-    def get(self, request):
-        url = GITHUB_USER_SEARCH_URL + self.get_search_term(request)
-        r = invoke_github_api(url, "GET")
-        serializer = GitHubUserSearchSerializer(data=json.loads(r.content)["items"], many=True)
-        serializer.is_valid(raise_exception=True)
-        self._create(serializer.data)
-        return response.Response(data=serializer.data)
+class AdminPanelReportView(TemplateView):
+
+    template_name = "admin_panel_reports.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(AdminPanelReportView, self).get_context_data(**kwargs)
+        today = datetime.datetime.today()
+        context['users_today'] = GithubUserData.objects.filter(
+            created__day=today.day, created__month=today.month, created__year=today.year).count()
+        context['users_week'] = GithubUserData.objects.filter(
+            created__range=((today - datetime.timedelta(days=7)), today)).count()
+        context['users_month'] = GithubUserData.objects.filter(
+            created__month=today.month).count()
+        return context
