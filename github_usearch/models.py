@@ -32,8 +32,8 @@ class GithubUserData(models.Model):
     available_for_hire = models.BooleanField( _("Is the user available for hire?"),
                                               default=False )
     bio = models.TextField( _("Users Github Bio") )
-    github_user_created = models.DateTimeField( _("User created datetime for Github") )
-    github_user_updated = models.DateTimeField( _("User updated datetime for Github") )
+    github_user_created = models.DateTimeField( _("User created datetime for Github"), null=True )
+    github_user_updated = models.DateTimeField( _("User updated datetime for Github"), null=True )
     created = models.DateTimeField( _("User created timestamp"), auto_now_add=True )
     updated= models.DateTimeField( _("User updated timestamp"), auto_now=True )
 
