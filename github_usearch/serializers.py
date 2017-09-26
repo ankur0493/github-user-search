@@ -11,7 +11,7 @@ from .models import GithubUserData
 from .constants import GITHUB_USER_LIST_ATTRIBUTE_MAP
 
 
-class GitHubUserSearchSerializer(serializers.ModelSerializer):
+class GitHubUserSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         d = {}
@@ -27,7 +27,7 @@ class GitHubUserSearchSerializer(serializers.ModelSerializer):
                 else:
                     d[key] = data[k]
         for field_name in self.fields:
-            if field_name not in d:
+            if field_name not in d or not d[field_name]:
                 field = self.Meta.model._meta.get_field(field_name)
                 default = field.default
                 if isinstance(field, (models.AutoField, models.DateTimeField)):

@@ -7,20 +7,21 @@
               Oops! That user does not exist.
           </div>
       {% else %}
-        <div class="col-4">
+        <div class="col-3">
           <div class="row">
               <img src="{{ object.avatar_url }}" width="115" height="115"/>
           </div>
           <div class="row"><strong>{{ object.user_profile_name }}</strong></div>
           <div class="row">{{ object.username }}</div>
         </div>
-        <div class="col-4">
+        <div class="col-5">
           <div class="row">Github ID = {{ object.github_id }}</div>
           <div class="row">User Type = {{ object.get_user_type_display }}</div>
           <div class="row">Is Site Admin? = {{ object.is_site_admin }}</div>
           <div class="row">Score = {{ object.score }}</div>
           <div class="row">Location = {{ object.location }}</div>
           <div class="row">Email = {{ object.email }}</div>
+          <div class="row">Company = {{ object.company }}</div>
           <div class="row">Available for Hire? = {{ object.available_for_hire }}</div>
           <div class="row">Bio = {{ object.bio }}</div>
           <div class="row">Github User Created = {{ object.github_user_created }}</div>
