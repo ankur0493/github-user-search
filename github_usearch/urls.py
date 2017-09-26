@@ -1,4 +1,5 @@
 from django.conf.urls import url, include
+from django.contrib.auth import views as auth_views
 
 from .api import GithubUserSearchView
 from .views import UserListView, UserDetailView, ReportView
@@ -9,6 +10,7 @@ github_api_urls = [
 ]
 
 urlpatterns = [
+    url(r'^login/$', auth_views.LoginView.as_view(template_name="login.html"), name="login" ),
     url(r'^github/', include( github_api_urls )),
     url(r'admin_panel/reports/$', ReportView.as_view()),
     url(r'admin_panel/users/$', UserListView.as_view(), name="admin-user-list"),

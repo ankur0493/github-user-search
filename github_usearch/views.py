@@ -2,16 +2,18 @@ from __future__ import unicode_literals
 
 import datetime
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.shortcuts import get_object_or_404
 
 from .models import GithubUserData
 
-class UserListView(generic.list.ListView):
+class UserListView(LoginRequiredMixin, generic.list.ListView):
 
     model = GithubUserData
     template_name = "user_list.html"
     paginate_by = 15
+    ordering = 'created'
 
     def get_context_data(self, **kwargs):
         context = super(UserListView, self).get_context_data(**kwargs)
@@ -19,7 +21,7 @@ class UserListView(generic.list.ListView):
         return context
 
 
-class UserDetailView(generic.detail.DetailView):
+class UserDetailView(generic.detail.DetailView, LoginRequiredMixin):
 
     model = GithubUserData
     template_name = "user_detail.html"
@@ -32,7 +34,7 @@ class UserDetailView(generic.detail.DetailView):
         return context
 
 
-class ReportView(generic.base.TemplateView):
+class ReportView(generic.base.TemplateView, LoginRequiredMixin):
 
     template_name = "admin_panel_reports.html"
 
