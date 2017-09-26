@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.shortcuts import get_object_or_404
 
-from .models import GithubUserData
+from .models import GithubUserData, ApiRequestsLog
 
 class UserListView(LoginRequiredMixin, generic.list.ListView):
 
@@ -99,10 +99,18 @@ class ReportView(generic.base.TemplateView, LoginRequiredMixin):
     def get_context_data(self, **kwargs):
         context = super(ReportView, self).get_context_data(**kwargs)
         today = datetime.datetime.today()
+        week_range = ((today - datetime.timedelta(days=7)), today)
         context['users_today'] = GithubUserData.objects.filter(
             created__day=today.day, created__month=today.month, created__year=today.year).count()
         context['users_week'] = GithubUserData.objects.filter(
-            created__range=((today - datetime.timedelta(days=7)), today)).count()
+            created__range=week_range).count()
         context['users_month'] = GithubUserData.objects.filter(
             created__month=today.month).count()
+        context['api_calls_today'] = ApiRequestsLog.objects.filter(
+            request_time__day=today.day, request_time__month=today.month, request_time__year=today.year).count()
+        context['api_calls_week'] = ApiRequestsLog.objects.filter(
+            request_time__range=week_range).count()
+        context['api_calls_month'] = ApiRequestsLog.objects.filter(
+            request_time__month=today.month).count()
+
         return context

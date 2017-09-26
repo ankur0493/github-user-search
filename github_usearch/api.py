@@ -6,7 +6,7 @@ from rest_framework import views, response
 
 from .constants import GITHUB_USER_SEARCH_URL
 from .interface import invoke_github_api
-from .models import GithubUserData
+from .models import GithubUserData, ApiRequestsLog
 from .serializers import GitHubUserSearchSerializer
 
 class GithubUserSearchView(views.APIView):
@@ -34,8 +34,10 @@ class GithubUserSearchView(views.APIView):
             GithubUserData.objects.bulk_create(bulk_create_objs)
 
     def get(self, request):
-        url = GITHUB_USER_SEARCH_URL + self.get_search_term(request)
+        search_params = self.get_search_term(request)
+        url = GITHUB_USER_SEARCH_URL + search_params
         r = invoke_github_api(url, "GET")
+        ApiRequestsLog.objects.create(queryparams=search_params[3:])
         serializer = GitHubUserSearchSerializer(data=json.loads(r.content)["items"], many=True)
         serializer.is_valid(raise_exception=True)
         self._create(serializer.data)
