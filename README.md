@@ -32,7 +32,7 @@ Installation
   ```
   pip install -r requirements.txt
   python manage.py migrate
-  python manage.py loaddata fixtures/*
+  python manage.py loaddata github_usearch/fixtures/*
   python manage.py runserver
   ```
 
